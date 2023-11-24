@@ -5,8 +5,8 @@ Repository uses in course SE104.O11.KHTN - Introduction to Software Engineering
 - **Faculty**: Computer Science
 - **Semester**: 1
 - **Year**: 2023 - 2024
-- **Lecturer**: Nguyễn Tuấn Nam
-                Đặng Việt Dũng
+- **Lecturer 1 (theory)**: Nguyễn Tuấn Nam
+- **Lecturer 2 (practice)**: Đặng Việt Dũng
 ## About the team
 |**Student ID**| **Member**|**Email**|
 |-----------|-----------|-----------|
