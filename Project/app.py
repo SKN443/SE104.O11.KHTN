@@ -32,7 +32,9 @@ def Get_image():
 
 db = Init()
 
+embedding_model = init_emb()
+
 input_img = Get_image()
 
-for img in pipeline(db, input_img, 20):
+for img in pipeline(db, embedding_model, input_img, 20):
     st.image(img, width = 250)
