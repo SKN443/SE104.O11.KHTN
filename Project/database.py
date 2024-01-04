@@ -95,8 +95,8 @@ def insert(db, product_id, image, category):
             'flag' : 1
         })
     elif not list(db.database.find({'product_id': product_id}))[0]['flag']:
-        update(product_id, image, category)
-
+        update(db, product_id, image, category)
+        db.database.update_one({'product_id': product_id}, {'$set': {'flag': 1}})
 def update(db, product_id, image=None, category=None):
     dned = {
         'image' : img2byte(image),
