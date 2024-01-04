@@ -58,25 +58,6 @@ def byte2img(image_bytes):
     pil_img = Image.open(io.BytesIO(image_bytes))
     return pil_img
 
-def query(vector, limit):
-    '''
-    inp:
-    - vector: image embedding
-    - limit: number of dicts return
-    out:
-    - list of dicts
-    '''
-    results = db.database.aggregate([
-      {
-        "$vectorSearch": {
-          "index": "vector_index",
-          "path": "vector",
-          "queryVector": vector,
-          "numCandidates": 100,
-          "limit": limit
-          }
-      }])
-    return results
 def pipeline(img, limit):
     '''
     inp:
