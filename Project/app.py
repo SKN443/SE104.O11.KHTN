@@ -1,3 +1,4 @@
+from PIL import Image
 import streamlit as st
 from database import *
 from model import *
@@ -5,9 +6,9 @@ from model import *
 db = Init()
 embedding_model = init_emb()
 
-
 st.title('Product management system')
 
+#col1, col2 = st.columns(2)
 
 #selection = st.selectbox("Please choose functions", ["Find", "Add", "Edit", "Remove"])
 
@@ -16,15 +17,22 @@ selection = st.sidebar.radio("Please choose functions", options= ["Search", "Add
 
 if selection == "Search":
 
-    search_selection = st.selectbox("Please choose search option",options = ["ID", "Text", "Image"])
+    search_selection = st.selectbox("Please choose search option",options = ["Product ID", "Text", "Image"])
 
-    if search_selection == "ID":
+    if search_selection == "Product ID":
         tbc = 1
         ## Call the exist-check function
 
     if selection == "Text":
         tbc = 1
         ##To be update
+
+    # output.append({
+    #     'image': byte2img(dct['image']),
+    #     'path': dct['path'],
+    #     'product_id': dct['product_id'],
+    #     'category': dct['category']
+    # })
 
     if search_selection == "Image":
         input_img = Get_image()
@@ -33,21 +41,40 @@ if selection == "Search":
             if input_img is None:
                 st.error('Please select image')
             else:
-                for img in pipeline(db, embedding_model, input_img, 20):
-                    st.image(img, width = 250)
+                output = pipeline(db, embedding_model, input_img, 15)
+                cols = st.columns(3)
+                for col_id in range(len(cols)):
+                    with cols[col_id]:
+                        for i in range(len(output)):
+                            if i % len(cols) == col_id:
+                                st.image(output[i]['image'])
+                                st.text('Product ID: '+output[i]['product_id'])
+                                st.text(output[i]['category'])
+                # col1, col2 = st.columns(2)
+                # with col1:
+                #     for product in output:
+                #         st.image(product['image'], width = 175)
+                # with col2:
+                #     for product in output:
+                #         #st.text(product['path'])
+                #         st.subheader('ID:')
+                #         st.text(product['product_id'])
+                #         st.subheader('Category')
+                #         st.text(product['category'])
+
 
 
 if selection == "Add":
 
     input_img = Get_image(get_dir = True)
-    img_id = st.text_input('Img_id', value = None)
+    product_id = st.text_input('Product ID', value = None)
     category = st.text_input('Category', value = None)
 
     if st.button('Submit'):
         if input_img is None:
             st.error('Please select image')
-        if img_id is None:
-            st.error('Please type ID')
+        if product_id is None:
+            st.error('Please type Product ID')
         if category is None:
             st.error('Please type Category')
         exist = False
@@ -60,11 +87,11 @@ if selection == "Add":
 
 if selection == "Edit":
 
-    img_id = st.text_input('Img_id', value = None)
+    product_id = st.text_input('Product ID', value = None)
 
     if st.button('Check'):
-        if img_id is None:
-            st.error('Please type ID')
+        if product_id is None:
+            st.error('Please type Product ID')
         else:
             ## Call the exist-check function
             exist = True
@@ -81,9 +108,9 @@ if selection == "Edit":
 
 if selection == "Remove":
 
-    img_id = st.text_input('Img_id', value=None)
+    product_id = st.text_input('Product ID', value=None)
     if st.button('Check'):
-        if img_id is None:
+        if product_id is None:
             st.error('Please type ID')
         else:
             ## Call the exist-check function
