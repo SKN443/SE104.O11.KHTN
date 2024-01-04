@@ -58,7 +58,7 @@ def byte2img(image_bytes):
     pil_img = Image.open(io.BytesIO(image_bytes))
     return pil_img
 
-def pipeline(img, limit):
+def pipeline(db, img, limit):
     '''
     inp:
     - img: an image (PIL image) or path to image
@@ -67,7 +67,7 @@ def pipeline(img, limit):
     - list of dicts
     '''
     emb = get_emb(img)
-    dcts = query(emb, limit)
+    dcts = query(db, emb, limit)
     dcts = list(dcts)
     for dct in dcts:
         dct['image'] = byte2img(dct['image'])
@@ -75,18 +75,18 @@ def pipeline(img, limit):
           dct.pop(key, None)
     return dcts
 
-def check_exist(product_id):
+def check_exist(db, product_id):
     return bool(db.database.count_documents({'product_id': product_id})) and bool(list(db.database.find({'product_id': product_id}))[0]['flag'])
 
-def erase(product_id):
+def erase(db, product_id):
     if bool(db.database.count_documents({'product_id': product_id})):
         db.database.update_one({'product_id': product_id}, {'$set':{'flag': 0}})
 
-def unerase(product_id):
+def unerase(db, product_id):
     if bool(db.database.count_documents({'product_id': product_id})):
         db.database.update_one({'product_id': product_id}, {'$set':{'flag': 1}})
 
-def insert(product_id, image, category):
+def insert(db, product_id, image, category):
     if not bool(db.database.count_documents({'product_id': product_id})):
         db.database.insert_one({
             'product_id' : product_id,
@@ -97,7 +97,7 @@ def insert(product_id, image, category):
     elif not list(db.database.find({'product_id': product_id}))[0]['flag']:
         update(product_id, image, category)
 
-def update(product_id, image=None, category=None):
+def update(db, product_id, image=None, category=None):
     dned = {
         'image' : img2byte(image),
         'category' : category,
