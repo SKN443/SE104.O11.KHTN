@@ -55,6 +55,9 @@ def byte2img(image_bytes):
 def check_exist(db, product_id):
     return bool(db.database.count_documents({'product_id': product_id})) and bool(list(db.database.find({'product_id': product_id}))[0]['flag'])
 
+def find(db, product_id):
+    return list(db.database.find({'product_id': product_id}))[0]
+    
 def erase(db, product_id):
     if bool(db.database.count_documents({'product_id': product_id})):
         db.database.update_one({'product_id': product_id}, {'$set':{'flag': 0}})
@@ -89,6 +92,8 @@ def insert(db, product_id, image, vector, category):
 def update(db, product_id, image=None, vector = None, category=None):
     if image is not None:
         image = img2byte(image)
+        
+def update(db, product_id, image=None, category=None):
     dned = {
         'image' : image,
         'category' : category,
