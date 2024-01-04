@@ -30,8 +30,12 @@ def pipeline(db, embeding_model, img, limit):
     '''
     emb = get_emb(embeding_model, img)
     dcts = query(db, emb, limit)
-    return_imgs = [byte2img(dct['image']) for dct in dcts]
-    return return_imgs
+    dcts = list(dcts)
+    for dct in dcts:
+        dct['image'] = byte2img(dct['image'])
+        for key in ['vector', '_id', 'flag', 'path']:
+          dct.pop(key, None)
+    return dcts
 
 
 def load_image(image_file):
