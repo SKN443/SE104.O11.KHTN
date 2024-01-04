@@ -39,7 +39,7 @@ def query(db, vector, limit):
           "numCandidates": 1500,
           "limit": limit
           }
-      }
+      }, {"$match": {"flag": 1}}
     ])
     return results
 
@@ -92,8 +92,6 @@ def insert(db, product_id, image, vector, category):
 def update(db, product_id, image=None, vector = None, category=None):
     if image is not None:
         image = img2byte(image)
-        
-def update(db, product_id, image=None, category=None):
     dned = {
         'image' : image,
         'category' : category,

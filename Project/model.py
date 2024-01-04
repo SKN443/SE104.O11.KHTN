@@ -90,3 +90,12 @@ def Update(db, product_id, input_img, category, embedding_model):
 
 def Delete(db, product_id):
     erase(db, product_id)
+
+def Get(db, product_id):
+    raw_result = find(db, product_id)
+    result ={
+        'image': byte2img(raw_result['image']),
+        'product_id': raw_result['product_id'],
+        'category': raw_result['category']
+    }
+    return result

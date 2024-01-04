@@ -15,10 +15,6 @@ def click_button():
 
 st.title('Product management system')
 
-#col1, col2 = st.columns(2)
-
-#selection = st.selectbox("Please choose functions", ["Find", "Add", "Edit", "Remove"])
-
 selection = st.sidebar.radio("Please choose functions", options= ["Search", "Add", "Edit", "Remove"])
 
 
@@ -34,7 +30,13 @@ if selection == "Search":
             else:
                 exist = Exist(db, product_id)
                 if exist == True:
-                    tbc = 1
+                    result = Get(db,product_id)
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.image(result['image'], width = 150)
+                    with col2:
+                        st.text('Product ID: ' + result['product_id'])
+                        st.text('Category: ' + result['category'])
                 else:
                     st.error('Could not find product with this ID')
 
@@ -90,7 +92,13 @@ if selection == "Edit":
             if exist == False:
                 st.error('Could not find product with this ID')
             else:
-                ## Retrieve and show current data
+                result = Get(db, product_id)
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.image(result['image'], width=150)
+                with col2:
+                    st.text('Product ID: ' + result['product_id'])
+                    st.text('Category: ' + result['category'])
                 st.text('Leave the field blank if no change is needed')
                 input_img = Get_image()
                 category = st.text_input('Category', value=None)
@@ -112,7 +120,13 @@ if selection == "Remove":
             if exist == False:
                 st.error('Could not find product with this ID')
             else:
-                ## Retrieve and show current data
+                result = Get(db, product_id)
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.image(result['image'], width=150)
+                with col2:
+                    st.text('Product ID: ' + result['product_id'])
+                    st.text('Category: ' + result['category'])
                 if st.button('Delete'):
                     Delete(db, product_id)
                     st.success('Delete product successfully')
