@@ -31,6 +31,7 @@ def pipeline(db, embeding_model, img, limit):
     emb = get_emb(embeding_model, img)
     dcts = query(db, emb, limit)
     dcts = list(dcts)
+    #st.text(dcts[0].keys())
     for dct in dcts:
         dct['image'] = byte2img(dct['image'])
         for key in ['vector', '_id', 'flag', 'path']:
@@ -71,3 +72,21 @@ def Get_image(get_dir = False):
         return img
     else:
         return save_dir
+
+
+def Exist(db, product_id):
+        return check_exist(db, product_id)
+
+def Add_product(db, input_img, product_id, category, embedding_model):
+    vector = get_emb(model = embedding_model, img = input_img)
+    insert(db = db, product_id= product_id, image= input_img, vector = vector, category= category)
+
+
+def Update(db, product_id, input_img, category, embedding_model):
+    vector = None
+    if input_img is not None:
+        vector = get_emb(model = embedding_model, img = input_img)
+    update(db,product_id,input_img,vector,category)
+
+def Delete(db, product_id):
+    erase(db, product_id)

@@ -2,6 +2,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import streamlit as st
 from PIL import Image
+import io
 
 @st.cache_resource
 def Init():
@@ -62,23 +63,38 @@ def unerase(db, product_id):
     if bool(db.database.count_documents({'product_id': product_id})):
         db.database.update_one({'product_id': product_id}, {'$set':{'flag': 1}})
 
-def insert(db, product_id, image, category):
+def insert_beta(db, product_id, image, vector, category):
     if not bool(db.database.count_documents({'product_id': product_id})):
         db.database.insert_one({
             'product_id' : product_id,
             'image' : img2byte(image),
+            'vector': vector,
             'category' : category,
             'flag' : 1
         })
     elif not list(db.database.find({'product_id': product_id}))[0]['flag']:
         update(db, product_id, image, category)
         unerase(db, product_id)
-def update(db, product_id, image=None, category=None):
+
+
+def insert(db, product_id, image, vector, category):
+        db.database.insert_one({
+            'product_id' : product_id,
+            'image' : img2byte(image),
+            'vector': vector,
+            'category' : category,
+            'flag' : 1
+        })
+
+def update(db, product_id, image=None, vector = None, category=None):
+    if image is not None:
+        image = img2byte(image)
     dned = {
-        'image' : img2byte(image),
+        'image' : image,
         'category' : category,
+        'vector': vector,
         'flag' : 1
     }
     dned = {k: v for k, v in dned.items() if v is not None}
-    if check_exist(db, product_id):
-        db.database.update_one({'product_id': product_id}, {'$set': dned})
+    #if check_exist(db, product_id):
+    db.database.update_one({'product_id': product_id}, {'$set': dned})

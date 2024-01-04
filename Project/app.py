@@ -1,10 +1,17 @@
-from PIL import Image
 import streamlit as st
 from database import *
 from model import *
 
 db = Init()
 embedding_model = init_emb()
+
+
+if 'button' not in st.session_state:
+    st.session_state.button = False
+
+def click_button():
+    st.session_state.button = not st.session_state.button
+
 
 st.title('Product management system')
 
@@ -17,22 +24,20 @@ selection = st.sidebar.radio("Please choose functions", options= ["Search", "Add
 
 if selection == "Search":
 
-    search_selection = st.selectbox("Please choose search option",options = ["Product ID", "Text", "Image"])
+    search_selection = st.selectbox("Please choose search option",options = ["Product ID", "Image"])
 
     if search_selection == "Product ID":
-        tbc = 1
-        ## Call the exist-check function
+        product_id = st.text_input('Product ID', value=None)
+        if st.button('Submit'):
+            if product_id is None:
+                st.error('Please type Product ID')
+            else:
+                exist = Exist(db, product_id)
+                if exist == True:
+                    tbc = 1
+                else:
+                    st.error('Could not find product with this ID')
 
-    if selection == "Text":
-        tbc = 1
-        ##To be update
-
-    # output.append({
-    #     'image': byte2img(dct['image']),
-    #     'path': dct['path'],
-    #     'product_id': dct['product_id'],
-    #     'category': dct['category']
-    # })
 
     if search_selection == "Image":
         input_img = Get_image()
@@ -50,23 +55,11 @@ if selection == "Search":
                                 st.image(output[i]['image'])
                                 st.text('Product ID: '+output[i]['product_id'])
                                 st.text(output[i]['category'])
-                # col1, col2 = st.columns(2)
-                # with col1:
-                #     for product in output:
-                #         st.image(product['image'], width = 175)
-                # with col2:
-                #     for product in output:
-                #         #st.text(product['path'])
-                #         st.subheader('ID:')
-                #         st.text(product['product_id'])
-                #         st.subheader('Category')
-                #         st.text(product['category'])
-
 
 
 if selection == "Add":
 
-    input_img = Get_image(get_dir = True)
+    input_img = Get_image()
     product_id = st.text_input('Product ID', value = None)
     category = st.text_input('Category', value = None)
 
@@ -77,48 +70,49 @@ if selection == "Add":
             st.error('Please type Product ID')
         if category is None:
             st.error('Please type Category')
-        exist = False
-        ##### Call exist-check function to find duplicate
-        if exist == False:
+        exist = Exist(db, product_id)
+        if exist == True:
             st.error('There is a existed product with same ID')
         else:
-            ###### Call add function
+            Add_product(db, input_img, product_id, category, embedding_model)
             st.success('Add product successfully')
 
 if selection == "Edit":
 
     product_id = st.text_input('Product ID', value = None)
 
-    if st.button('Check'):
+    st.button('Check', on_click=click_button)
+    if st.session_state.button:
         if product_id is None:
             st.error('Please type Product ID')
         else:
-            ## Call the exist-check function
-            exist = True
+            exist = Exist(db,product_id)
             if exist == False:
                 st.error('Could not find product with this ID')
             else:
                 ## Retrieve and show current data
                 st.text('Leave the field blank if no change is needed')
-                input_img = Get_image(get_dir=True)
+                input_img = Get_image()
                 category = st.text_input('Category', value=None)
-                ## Call the update function
+                if st.button('Update'):
+                    Update(db, product_id, input_img, category, embedding_model)
+                    st.success('Edit product successfully')
 
 
 
 if selection == "Remove":
 
     product_id = st.text_input('Product ID', value=None)
-    if st.button('Check'):
+    st.button('Check', on_click=click_button)
+    if st.session_state.button:
         if product_id is None:
             st.error('Please type ID')
         else:
-            ## Call the exist-check function
-            exist = True
+            exist = Exist(db,product_id)
             if exist == False:
                 st.error('Could not find product with this ID')
             else:
                 ## Retrieve and show current data
                 if st.button('Delete'):
-                    ### Call delete function
+                    Delete(db, product_id)
                     st.success('Delete product successfully')
