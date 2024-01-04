@@ -104,5 +104,5 @@ def update(db, product_id, image=None, category=None):
         'flag' : 1
     }
     dned = {k: v for k, v in dned.items() if v is not None}
-    if check_exist(product_id):
+    if check_exist(db, product_id):
         db.database.update_one({'product_id': product_id}, {'$set': dned})
