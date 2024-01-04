@@ -50,6 +50,13 @@ if selection == "Add":
             st.error('Please type ID')
         if category is None:
             st.error('Please type Category')
+        exist = False
+        ##### Call exist-check function to find duplicate
+        if exist == False:
+            st.error('There is a existed product with same ID')
+        else:
+            ###### Call add function
+            st.success('Add product successfully')
 
 if selection == "Edit":
 
@@ -87,4 +94,4 @@ if selection == "Remove":
                 ## Retrieve and show current data
                 if st.button('Delete'):
                     ### Call delete function
-                    tbc = 1
+                    st.success('Delete product successfully')
