@@ -1,9 +1,9 @@
 import streamlit as st
-from database import *
+from database import Database
 from model import *
 
-db = Init()
-embedding_model = init_emb()
+db = Database()
+embedding_model = Image_embedding()
 
 
 if 'button' not in st.session_state:
