@@ -43,20 +43,19 @@ class Database:
         return results
 
     def check_exist(self, product_id):
-        return bool(self.db.database.count_documents({'product_id': product_id})) and bool(list(self.db.database.find({'product_id': product_id}))[0]['flag'])
+        return bool(self.db.database.count_documents({'product_id': product_id, 'flag': 1}))
 
     def find(self, product_id):
-        return list(self.db.database.find({'product_id': product_id}))[0]
+        if self.check_exist(product_id):
+            # return list(self.db.database.find({'product_id': product_id, 'flag': 1}))[0]
+            return self.db.database.find_one({'product_id': product_id, 'flag': 1})
     
     def erase(self, product_id):
-        if bool(self.db.database.count_documents({'product_id': product_id})):
-            self.db.database.update_one({'product_id': product_id}, {'$set':{'flag': 0}})
-
-    def unerase(self, product_id):
-        if bool(self.db.database.count_documents({'product_id': product_id})):
-            self.db.database.update_one({'product_id': product_id}, {'$set':{'flag': 1}})
+        if self.check_exist(product_id):
+            self.db.database.update_one({'product_id': product_id, 'flag': 1}, {'$set':{'flag': 0}})
 
     def insert(self, product_id, image, vector, category):
+        if not self.check_exist(product_id):
             self.db.database.insert_one({
                 'product_id' : product_id,
                 'image' : img2byte(image),
@@ -76,4 +75,4 @@ class Database:
         }
         dned = {k: v for k, v in dned.items() if v is not None}
         #if check_exist(db, product_id):
-        self.db.database.update_one({'product_id': product_id}, {'$set': dned})
+        self.db.database.update_one({'product_id': product_id, 'flag': 1}, {'$set': dned})
