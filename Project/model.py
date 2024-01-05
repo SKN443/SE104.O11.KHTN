@@ -7,7 +7,7 @@ import streamlit as st
 
 @st.cache_resource
 class Image_embedding:
-    def __int__(self):
+    def __init__(self):
         self.embedding_model = imgbeddings()
 
     def get_emb(self, img):
@@ -34,7 +34,7 @@ def pipeline(db, embeding_model, img, limit):
     out:
     - list of images
     '''
-    emb = embeding_model.get_emb(img)
+    emb = embeding_model.get_emb(img = img)
     dcts = db.query(emb, limit)
     dcts = list(dcts)
     #st.text(dcts[0].keys())
